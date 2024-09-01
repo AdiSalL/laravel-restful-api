@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
@@ -35,7 +36,7 @@ class UserController extends Controller
         return (new UserResource($user))->response()->setStatusCode(201);
     } 
 
-    public function login(UserRegisterRequest $request): UserResource {
+    public function login(UserLoginRequest $request): UserResource {
         $data = $request->validated();
         $user = User::where("username", $data["username"])->first();
         if(!$user || !Hash::check($data["password"] , $user->password)) {
