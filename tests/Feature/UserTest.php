@@ -67,7 +67,13 @@ class UserTest extends TestCase
     }
 
     public function testLoginFailed() {
+        $this->seed([UserSeeder::class]);
+        $this->post("/api/users/login", [
+            "username" => "",
+            "password" => "",
+        ])->assertStatus(400);
         
+     
     }
 
 }
