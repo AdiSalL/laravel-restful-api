@@ -6,6 +6,7 @@ use App\Models\User;
 use Database\Seeders\UserSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class UserTest extends TestCase
@@ -133,29 +134,50 @@ class UserTest extends TestCase
     public function testUpdatePasswordSuccess()
     {
         $this->seed([UserSeeder::class]);
+    
+        // Retrieve the user with the old password
         $oldUser = User::where('username', 'test')->first();
-
-        $this->patch('/api/users/current',
+    
+        // Update the password
+        $response = $this->patch('/api/users/current',
             [
-                'password' => 'baru'
+                'password' => 'anjay'
             ],
             [
                 'Authorization' => 'test'
             ]
-        )->assertStatus(200)
+        );
+    
+        $response->assertStatus(200)
             ->assertJson([
                 'data' => [
                     'username' => 'test',
                     'name' => 'test'
                 ]
             ]);
-
+    
+        // Retrieve the user again to check the updated password
         $newUser = User::where('username', 'test')->first();
-        self::assertNotEquals($oldUser->password, $newUser->password);
+    
+        // Ensure the password has been hashed correctly
+        $this->assertNotEquals($oldUser->password, $newUser->password);
     }
+    
 
 
     public function testUpdateFailed() {
-        
+        $this->seed([UserSeeder::class]);
+        $this->patch('/api/users/current',
+        [
+            'Authorization' => ''
+        ]
+    )->assertStatus(401)
+        ->assertJson([
+            'errors' => [
+                "message" => [
+                    "unauthorized"
+                ]
+            ]
+        ]);
     }
 }

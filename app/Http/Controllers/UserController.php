@@ -69,13 +69,22 @@ class UserController extends Controller
         $token = $request->header("Authorization");
         $user = User::where("token", $token)->first();
 
+        if (!$user) {
+            throw new HttpResponseException(response([
+                'errors' => [
+                    'message' => ['User not found']
+                ]
+            ], 404));
+        }
+
         if(isset($data["name"])) {
             $user->name = $data["name"];
         }
 
-        if(isset($data["password"])) {
-            $user->password = Hash::make($data["password"]);
+        if (isset($data['password'])) {
+            $user->password = Hash::make($data['password']);
         }
+
         $user->save();
         return new UserResource($user);
     }
