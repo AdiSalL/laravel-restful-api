@@ -1,32 +1,32 @@
 <?php
-
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class User extends Model implements Authenticatable
+class User extends Authenticatable
 {
+    use HasFactory;
+
     protected $table = "users";
     protected $primaryKey = "id";
     protected $keyType = "int";
     public $timestamps = true;
     public $incrementing = true;
 
-    public $fillable = [
+    protected $fillable = [
         "username",
         "password",
         "name",
     ];
 
-    public function contacts()
+    public function contacts(): HasMany
     {
         return $this->hasMany(Contact::class, "user_id", "id");
     }
 
-        /**
+    /**
      * Get the name of the unique identifier for the user.
      *
      * @return string
@@ -78,7 +78,7 @@ class User extends Model implements Authenticatable
      * @return void
      */
     public function setRememberToken($value) {
-        return $this->token = $value;
+        $this->token = $value;
     }
 
     /**
