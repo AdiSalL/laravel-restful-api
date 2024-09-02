@@ -88,4 +88,14 @@ class UserController extends Controller
         $user->save();
         return new UserResource($user);
     }
+
+    public function logout(Request $request): JsonResponse{
+        $user = Auth::user();
+        $user->token = null;
+        $user->save();
+
+        return response()->json([
+            'message' => 'Logged out successfully'
+        ])->setStatusCode(200);
+    }
 }
