@@ -101,4 +101,43 @@ class ContactTest extends TestCase
             "Authorization" => "test2"
         ])->assertStatus(404);
     }
+
+    public function testUpdateSuccess() {
+        $this->seed([UserSeeder::class, ContactSeeder::class]);
+        $contact = Contact::query()->limit(1)->first();
+        
+        $this->put("/api/contacts/". $contact->id, 
+        [
+            "first_name" => "test2",
+            "last_name" => "test2",
+            "email" => "adiefsal2@gmail.com",
+        ],
+        [
+            "Authorization" => "test"
+        ])->assertStatus(200)
+        ->assertJson([
+            "data" => [
+                "first_name" => "test2",
+                "last_name" => "test2",
+                "email" => "adiefsal2@gmail.com",
+
+            ]
+        ]);
+        
+    }
+
+    public function testUpdateFailed() {
+        $this->seed([UserSeeder::class, ContactSeeder::class]);
+        $contact = Contact::query()->limit(1)->first();
+        
+        $this->put("/api/contacts/". $contact->id, 
+        [
+            "first_name" => "",
+            "last_name" => "test2",
+            "email" => "adiefsal2@gmail.com",
+        ],
+        [
+            "Authorization" => "test"
+        ])->assertStatus(400);
+    }
 }
