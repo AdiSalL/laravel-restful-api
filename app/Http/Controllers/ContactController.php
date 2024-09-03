@@ -75,7 +75,7 @@ class ContactController extends Controller
                         "not found"
                     ]
                 ]
-            ])->setStatusCode(401));
+            ])->setStatusCode(404));
         }
         $contact->delete();
         return response()->json([
