@@ -112,4 +112,77 @@ class AddressTest extends TestCase
             ]
         ]);
     }
+    
+    public function testUpdateSuccess() {
+        $this->seed([UserSeeder::class, ContactSeeder::class, AddressSeeder::class]);
+        $address = Address::query()->limit(1)->first();
+
+        $this->put("/api/contacts/" . $address->contact_id . "/addresses/" . $address->id, 
+        [
+            "street" => "Jl. Test Baru",
+            "city" => "Test Baru",
+            "province" => "Test Baru",
+            "country" => "Test Baru",
+            "postal_code" => "1402",
+
+        ],
+        [
+            "Authorization" => "test"
+        ],)
+        ->assertStatus(200)
+        ->assertJson([
+            "data" => [
+                "street" => "Jl. Test Baru",
+                "city" => "Test Baru",
+                "province" => "Test Baru",
+                "country" => "Test Baru",
+                "postal_code" => "1402",
+            
+            ]
+   ]);
+    }
+
+     
+    public function testUpdateFailed() {
+        $this->seed([UserSeeder::class, ContactSeeder::class, AddressSeeder::class]);
+        $address = Address::query()->limit(1)->first();
+
+        $this->put("/api/contacts/" . $address->contact_id . "/addresses/" . $address->id, 
+        [
+            "street" => "Test Baru",
+            "city" => "",
+            "province" => "Test Baru",
+            "country" => "",
+            "postal_code" => "1402",
+
+        ],
+        [
+            "Authorization" => "test"
+        ],)
+        ->assertStatus(400);
+    }   
+
+    public function testUpdateNotFound() {
+        $this->seed([UserSeeder::class, ContactSeeder::class, AddressSeeder::class]);
+        $address = Address::query()->limit(1)->first();
+        $this->put("/api/contacts/" . $address->contact_id . "/addresses/" . ($address->id + 1), 
+        [
+            "street" => "Test Baru",
+            "city" => "",
+            "province" => "Test Baru",
+            "country" => "update",
+            "postal_code" => "1402",
+
+        ],
+        [
+            "Authorization" => "test"
+        ],)
+        ->assertStatus(404)        
+        ->assertJson([
+            "errors" => [
+                "message" => ["not found"]
+            ]
+   ]);;
+    }  
+
 }
