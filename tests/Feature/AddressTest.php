@@ -212,4 +212,23 @@ class AddressTest extends TestCase
     //     ->assertStatus(401);
     // }
 
+    public function testListSuccess() {
+        $this->seed([UserSeeder::class, ContactSeeder::class, AddressSeeder::class]);
+        $contact = Contact::query()->limit(1)->first();
+        $this->get("/api/contacts/" . $contact->id . "/addresses" ,
+        [
+            "Authorization" => "test"
+        ],)
+        ->assertStatus(200);
+    }
+
+    public function testListNotFound() {
+        $this->seed([UserSeeder::class, ContactSeeder::class, AddressSeeder::class]);
+        $contact = Contact::query()->limit(1)->first();
+        $this->get("/api/contacts/" . ($contact->id + 1) . "/addresses" ,
+        [
+            "Authorization" => "test"
+        ],)
+        ->assertStatus(404);
+    }
 }
